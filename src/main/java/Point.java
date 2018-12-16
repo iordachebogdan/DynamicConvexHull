@@ -1,7 +1,9 @@
 package main.java;
 
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 
 import static main.java.Constants.POINT_RADIUS;
 import static main.java.Constants.ACTIVE_POINT_COLOR;
@@ -11,6 +13,7 @@ import static main.java.Constants.EPS;
 public class Point extends Circle implements Comparable<Point> {
     public final double x, y;
     private boolean setInactiveCounter;
+    private Line lineToPrev = null;
 
     public Point(double x, double y) {
         super(x, y, POINT_RADIUS);

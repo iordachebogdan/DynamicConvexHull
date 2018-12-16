@@ -1,5 +1,6 @@
 package main.java;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.TreeSet;
@@ -49,6 +50,24 @@ public class ConvexHullManager {
             }
             h.add(p);
         }
+    }
+
+    public ArrayList<Point> getConvexHull() {
+        ArrayList<Point> h = new ArrayList<>();
+        var curr = hull[0].first();
+        while (curr != null) {
+            h.add(curr);
+            curr = hull[0].higher(curr);
+        }
+        curr = hull[1].first();
+        if (curr == null)
+            return h;
+        curr = hull[1].higher(curr);
+        while (curr != null) {
+            h.add(curr);
+            curr = hull[1].higher(curr);
+        }
+        return h;
     }
 
     private static boolean isNotRightTurn(Point a, Point b, Point c) {

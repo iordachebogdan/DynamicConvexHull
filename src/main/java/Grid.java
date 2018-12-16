@@ -5,6 +5,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.Node;
 
+import static main.java.Constants.WINDOW_WIDTH;
+import static main.java.Constants.WINDOW_HEIGHT;
+
 public class Grid extends BorderPane {
     private Pane canvas;
     private ConvexHullManager convexHull;
@@ -13,7 +16,7 @@ public class Grid extends BorderPane {
     public Grid() {
         canvas = new Pane();
         convexHull = new ConvexHullManager();
-        canvas.setPrefSize(500, 500);
+        canvas.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         this.setCenter(canvas);
 
         toolTip = new Tooltip();

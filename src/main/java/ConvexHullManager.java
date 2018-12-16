@@ -1,52 +1,63 @@
 package main.java;
 
-import java.util.ArrayList;
-import java.util.Stack;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 import static main.java.Constants.EPS;
 
 public class ConvexHullManager {
-    public ArrayList<Point> activePoints;
+    private NavigableSet<Point>[] hull;
 
     public ConvexHullManager() {
-        activePoints = new ArrayList<>();
+        hull = new NavigableSet[2];
+        hull[0] = new TreeSet<>(Comparator.naturalOrder());
+        hull[1] = new TreeSet<>(Comparator.reverseOrder());
     }
 
     public void add(Point p) {
-        activePoints.add(p);
-        redoHull();
-    }
+        for (int sidx = 0; sidx < 2; ++sidx) {
+            var h = hull[sidx];
 
-    private void redoHull() {
-        Collections.sort(activePoints);
-        int n = activePoints.size();
-        Stack<Point> stk = new Stack<>();
-        for (int i = 0; i < n + n; ++i) {
-            var c = activePoints.get(i < n ? i : n + n - i - 1);
-            if (i < n) {
-                c.resetSetInactiveCounter();
+            var prev = h.lower(p);
+            var next = h.higher(p);
+            if (isNotRightTurn(prev, p, next)) {
+                p.setInactive();
+                continue;
             }
 
-            while (stk.size() > 1) {
-                var b = stk.pop();
-                var a = stk.peek();
-                if (isRightTurn(a, b, c)) {
-                    stk.push(b);
+            while (prev != null) {
+                var pprev = h.lower(prev);
+                if (!isNotRightTurn(pprev, prev, p)) {
                     break;
-                } else {
-                    b.setInactive();
                 }
+
+                h.remove(prev);
+                prev.setInactive();
+                prev = pprev;
             }
-            stk.push(c);
+
+            while (next != null) {
+                var nnext = h.higher(next);
+                if (!isNotRightTurn(p, next, nnext)) {
+                    break;
+                }
+
+                h.remove(next);
+                next.setInactive();
+                next = nnext;
+            }
+            h.add(p);
         }
-        stk.pop().setInactive();
-        activePoints = new ArrayList<>(stk);
     }
 
-    private static boolean isRightTurn(Point a, Point b, Point c) {
-        double cross = (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
-        double dot = (a.x - b.x) * (c.x - b.x) + (a.y - b.y) * (c.y - b.y);
-        return !(cross < -EPS || cross < EPS && dot < EPS);
+    private static boolean isNotRightTurn(Point a, Point b, Point c) {
+        if (a == null || c == null) {
+            return false;
+        }
+
+        final double cross = (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
+        final double dot = (a.x - b.x) * (c.x - b.x) + (a.y - b.y) * (c.y - b.y);
+        return (cross < -EPS || cross < EPS && dot < -EPS);
     }
-}
+};

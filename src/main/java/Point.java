@@ -3,7 +3,10 @@ package main.java;
 import javafx.scene.shape.Circle;
 import javafx.scene.layout.Pane;
 
-import static main.java.Constants.*;
+import static main.java.Constants.POINT_RADIUS;
+import static main.java.Constants.ACTIVE_POINT_COLOR;
+import static main.java.Constants.INACTIVE_POINT_COLOR;
+import static main.java.Constants.EPS;
 
 public class Point extends Circle implements Comparable<Point> {
     public final double x, y;
@@ -19,18 +22,18 @@ public class Point extends Circle implements Comparable<Point> {
         });
         this.x = x;
         this.y = y;
-        this.resetSetInactiveCounter();
+        resetSetInactiveCounter();
     }
 
     public void resetSetInactiveCounter() {
-        this.setInactiveCounter = true;
+        setInactiveCounter = true;
     }
 
     public void setInactive() {
         if (!this.setInactiveCounter) {
             super.setFill(INACTIVE_POINT_COLOR);
         } else {
-            this.setInactiveCounter = false;
+            setInactiveCounter = false;
         }
     }
 

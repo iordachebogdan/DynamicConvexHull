@@ -12,6 +12,7 @@ public class Main extends Application {
         Group root = new Group();
         primaryStage.setTitle("Dynamic Convex Hull");
         primaryStage.setScene(new Scene(root, 500, 500));
+        primaryStage.setResizable(false);
 
         Grid grid = new Grid();
         root.getChildren().add(grid);

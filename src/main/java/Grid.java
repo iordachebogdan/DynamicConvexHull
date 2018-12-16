@@ -1,19 +1,23 @@
 package main.java;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.Node;
 
 public class Grid extends BorderPane {
     private Pane canvas;
-    private ConvexHullManager ch;
+    private ConvexHullManager convexHull;
+    private Tooltip toolTip;
 
     public Grid() {
         canvas = new Pane();
-        ch = new ConvexHullManager();
+        convexHull = new ConvexHullManager();
         canvas.setPrefSize(500, 500);
         this.setCenter(canvas);
+
+        toolTip = new Tooltip();
+
         canvas.setOnMouseClicked(e -> {
             if (e.getSource() instanceof Pane) {
                 Pane canvas = (Pane)e.getSource();
@@ -21,8 +25,16 @@ public class Grid extends BorderPane {
                 double y = e.getY();
                 Point newPoint = new Point(x, y);
                 canvas.getChildren().add(newPoint);
-                ch.add(newPoint);
+                convexHull.add(newPoint);
             }
+        });
+
+        canvas.setOnMouseMoved(e -> {  // @TODO(iordachebogdan) account for drag and zoom displacements (also ordinates seem to be inverted)
+            toolTip.setText("{x: " + e.getX() + ", y: " + e.getY() + "}");
+            toolTip.show((Node) e.getSource(), e.getScreenX() + 15, e.getScreenY() + 15);
+        });
+        canvas.setOnMouseExited(e -> {
+            toolTip.hide();
         });
     }
 }

@@ -7,29 +7,37 @@ import static main.java.Constants.*;
 
 public class Point extends Circle implements Comparable<Point> {
     public final double x, y;
-    private boolean removeCounter;
+    private boolean setInactiveCounter;
 
     public Point(double x, double y) {
         super(x, y, POINT_RADIUS);
         super.setFill(ACTIVE_POINT_COLOR);
+        super.setOnMouseClicked(e -> {
+            if (e.getSource() instanceof Point) {
+                e.consume();
+            }
+        });
         this.x = x;
         this.y = y;
-        this.resetRemoveCounter();
+        this.resetSetInactiveCounter();
     }
 
-    public void resetRemoveCounter() {
-        this.removeCounter = true;
+    public void resetSetInactiveCounter() {
+        this.setInactiveCounter = true;
+    }
+
+    public void setInactive() {
+        if (!this.setInactiveCounter) {
+            super.setFill(INACTIVE_POINT_COLOR);
+        } else {
+            this.setInactiveCounter = false;
+        }
     }
 
     public void remove() {
-        if (!this.removeCounter) {
-            super.setFill(INACTIVE_POINT_COLOR);
-        } else {
-            this.removeCounter = false;
+        if (super.getParent() instanceof Pane) {
+            ((Pane) super.getParent()).getChildren().remove(this);
         }
-        // if (super.getParent() instanceof Pane) {
-        //     ((Pane) super.getParent()).getChildren().remove(this);
-        // }
     }
 
     @Override

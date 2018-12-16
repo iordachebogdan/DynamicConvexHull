@@ -25,7 +25,7 @@ public class ConvexHullManager {
         for (int i = 0; i < n + n; ++i) {
             var c = activePoints.get(i < n ? i : n + n - i - 1);
             if (i < n) {
-                c.resetRemoveCounter();
+                c.resetSetInactiveCounter();
             }
 
             while (stk.size() > 1) {
@@ -35,12 +35,12 @@ public class ConvexHullManager {
                     stk.push(b);
                     break;
                 } else {
-                    b.remove();
+                    b.setInactive();
                 }
             }
             stk.push(c);
         }
-        stk.pop().remove();
+        stk.pop().setInactive();
         activePoints = new ArrayList<>(stk);
     }
 

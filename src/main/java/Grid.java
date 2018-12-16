@@ -32,13 +32,24 @@ public class Grid extends BorderPane {
         public void handle(MouseEvent e) {
             if (e.getSource() instanceof Pane) {
                 Pane canvas = (Pane)e.getSource();
-
                 double x = e.getX();
                 double y = e.getY();
                 Circle newPoint = new Circle(x, y, radius);
                 newPoint.setFill(Color.BLACK);
+                newPoint.setOnMouseClicked(circleOnMouseClicked);
                 circles.add(newPoint);
                 canvas.getChildren().add(newPoint);
+                System.out.println("Hit canvas");
+            }
+        }
+    };
+
+    private EventHandler<MouseEvent> circleOnMouseClicked = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            if (e.getSource() instanceof Circle) {
+                System.out.println("Hit circle");
+                e.consume();
             }
         }
     };

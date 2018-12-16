@@ -1,13 +1,35 @@
 package main.java;
 
-import static main.java.Constants.EPS;
+import javafx.scene.shape.Circle;
+import javafx.scene.layout.Pane;
 
-public class Point implements Comparable<Point> {
+import static main.java.Constants.*;
+
+public class Point extends Circle implements Comparable<Point> {
     public final double x, y;
+    private boolean removeCounter;
 
     public Point(double x, double y) {
+        super(x, y, POINT_RADIUS);
+        super.setFill(ACTIVE_POINT_COLOR);
         this.x = x;
         this.y = y;
+        this.resetRemoveCounter();
+    }
+
+    public void resetRemoveCounter() {
+        this.removeCounter = true;
+    }
+
+    public void remove() {
+        if (!this.removeCounter) {
+            super.setFill(INACTIVE_POINT_COLOR);
+        } else {
+            this.removeCounter = false;
+        }
+        // if (super.getParent() instanceof Pane) {
+        //     ((Pane) super.getParent()).getChildren().remove(this);
+        // }
     }
 
     @Override
@@ -17,8 +39,8 @@ public class Point implements Comparable<Point> {
 
     @Override
     public int compareTo(Point other) {
-        double xdif = x - other.x;
-        double ydif = y - other.y;
+        final double xdif = x - other.x;
+        final double ydif = y - other.y;
         if (xdif > EPS || xdif > -EPS && ydif > EPS) {
             return 1;
         }

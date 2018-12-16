@@ -24,23 +24,29 @@ public class ConvexHullManager {
         Stack<Point> stk = new Stack<>();
         for (int i = 0; i < n + n; ++i) {
             var c = activePoints.get(i < n ? i : n + n - i - 1);
+            if (i < n) {
+                c.resetRemoveCounter();
+            }
+
             while (stk.size() > 1) {
                 var b = stk.pop();
                 var a = stk.peek();
-                if (!isNotRightTurn(a, b, c)) {
+                if (isRightTurn(a, b, c)) {
                     stk.push(b);
                     break;
+                } else {
+                    b.remove();
                 }
             }
             stk.push(c);
         }
-        stk.pop();
+        stk.pop().remove();
         activePoints = new ArrayList<>(stk);
     }
 
-    private static boolean isNotRightTurn(Point a, Point b, Point c) {
+    private static boolean isRightTurn(Point a, Point b, Point c) {
         double cross = (a.x - b.x) * (c.y - b.y) - (a.y - b.y) * (c.x - b.x);
         double dot = (a.x - b.x) * (c.x - b.x) + (a.y - b.y) * (c.y - b.y);
-        return cross < -EPS || cross < EPS && dot <= EPS;
+        return !(cross < -EPS || cross < EPS && dot < EPS);
     }
 }

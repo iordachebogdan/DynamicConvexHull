@@ -1,19 +1,9 @@
 package main.java;
 
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-
-import java.util.ArrayList;
 
 public class Grid extends BorderPane {
     public Grid() {
@@ -23,9 +13,7 @@ public class Grid extends BorderPane {
         canvas.setOnMouseClicked(canvasOnMouseClicked);
     }
 
-    private final double radius = 5;
-    private ArrayList<Point> points = new ArrayList<>();
-    private ArrayList<Circle> circles = new ArrayList<>();
+    private ConvexHullManager ch = new ConvexHullManager();
 
     private EventHandler<MouseEvent> canvasOnMouseClicked = new EventHandler<MouseEvent>() {
         @Override
@@ -35,10 +23,9 @@ public class Grid extends BorderPane {
 
                 double x = e.getX();
                 double y = e.getY();
-                Circle newPoint = new Circle(x, y, radius);
-                newPoint.setFill(Color.BLACK);
-                circles.add(newPoint);
+                Point newPoint = new Point(x, y);
                 canvas.getChildren().add(newPoint);
+                ch.add(newPoint);
             }
         }
     };

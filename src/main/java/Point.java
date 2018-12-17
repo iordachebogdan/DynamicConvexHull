@@ -15,8 +15,8 @@ public class Point extends Circle implements Comparable<Point> {
     private boolean setInactiveCounter;
     private Line lineToPrev = null;
 
-    public Point(double x, double y) {
-        super(x, y, POINT_RADIUS);
+    public Point(double x, double y, double screenX, double screenY) {
+        super(screenX, screenY, POINT_RADIUS);
         super.setFill(ACTIVE_POINT_COLOR);
         super.setOnMouseClicked(e -> {
             if (e.getSource() instanceof Point) {

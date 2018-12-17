@@ -17,6 +17,7 @@ public class Grid extends BorderPane {
     private ConvexHullManager convexHull;
     private Tooltip toolTip;
     private double dragOriginX, dragOriginY;
+    private double originX = 0, originY = 0;
 
     public Grid() {
         canvas = new Pane();
@@ -27,11 +28,14 @@ public class Grid extends BorderPane {
         toolTip = new Tooltip();
 
         canvas.setOnMouseClicked(e -> {
+            if (!e.isStillSincePress())
+                return;
             if (e.getSource() instanceof Pane) {
                 Pane canvas = (Pane)e.getSource();
-                double x = e.getX();
-                double y = e.getY();
-                Point newPoint = new Point(x, y);
+                double x = originX + e.getX();
+                double y = originY + e.getY();
+                System.out.println(x + " " + y);
+                Point newPoint = new Point(x, y, e.getX(), e.getY());
                 canvas.getChildren().add(newPoint);
                 convexHull.add(newPoint);
 
@@ -51,11 +55,37 @@ public class Grid extends BorderPane {
         });
 
         canvas.setOnMouseMoved(e -> {  // @TODO(iordachebogdan) account for drag and zoom displacements (also ordinates seem to be inverted)
-            toolTip.setText("{x: " + e.getX() + ", y: " + e.getY() + "}");
+            double x = originX + e.getX();
+            double y = originY + e.getY();
+            toolTip.setText("{x: " + x + ", y: " + y + "}");
             toolTip.show((Node) e.getSource(), e.getScreenX() + 15, e.getScreenY() + 15);
         });
         canvas.setOnMouseExited(e -> {
             toolTip.hide();
+        });
+
+        canvas.setOnMousePressed(e -> {
+            dragOriginX = e.getX();
+            dragOriginY = e.getY();
+        });
+        canvas.setOnMouseDragged(e -> {
+            double offsetX = e.getX() - dragOriginX;
+            double offsetY = e.getY() - dragOriginY;
+            originX -= offsetX;
+            originY -= offsetY;
+            for (var child : canvas.getChildren()) {
+                if (child instanceof Point) {
+                    ((Point)child).setCenterX(((Point)child).getCenterX() + offsetX);
+                    ((Point)child).setCenterY(((Point)child).getCenterY() + offsetY);
+                } else if (child instanceof Line) {
+                    ((Line)child).setStartX(((Line)child).getStartX() + offsetX);
+                    ((Line)child).setStartY(((Line)child).getStartY() + offsetY);
+                    ((Line)child).setEndX(((Line)child).getEndX() + offsetX);
+                    ((Line)child).setEndY(((Line)child).getEndY() + offsetY);
+                }
+            }
+            dragOriginX = e.getX();
+            dragOriginY = e.getY();
         });
     }
 }

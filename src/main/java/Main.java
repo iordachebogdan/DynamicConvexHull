@@ -12,6 +12,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
+import javafx.stage.StageStyle;
+
 import static main.java.Constants.WINDOW_WIDTH;
 import static main.java.Constants.WINDOW_HEIGHT;
 import static main.java.Constants.INSERT_WINDOW_WIDTH;
@@ -40,10 +42,10 @@ public class Main extends Application {
 
             Stage insertStage = new Stage();
             insertStage.setAlwaysOnTop(true);
-            insertStage.setResizable(false);
+            insertStage.initStyle(StageStyle.UTILITY);
 
             Group insertRoot = new Group();
-            //insertStage.setTitle("Insert point");
+            insertStage.setTitle("Insert point");
             insertStage.setScene(new Scene(insertRoot, INSERT_WINDOW_WIDTH, INSERT_WINDOW_HEIGHT));
             insertStage.show();
 
@@ -61,6 +63,7 @@ public class Main extends Application {
             submit.setOnMouseClicked(submitClickedEvent -> {  // TODO(@iordachebogdan) add point to main grid
                 double x = Double.parseDouble(field[0].getText());
                 double y = Double.parseDouble(field[1].getText());
+                insertStage.close();
             });
             for (int i = 0; i < 2; ++i) {
                 field[i] = new TextField();

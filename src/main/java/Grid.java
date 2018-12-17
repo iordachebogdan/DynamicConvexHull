@@ -16,7 +16,7 @@ public class Grid extends BorderPane {
     private ConvexHullManager convexHull;
     private Tooltip toolTip;
     private double dragOriginX, dragOriginY;
-    private double originX = 0, originY = 0;
+    private double originX = -WINDOW_WIDTH/2.0, originY = WINDOW_HEIGHT/2.0;
     private double ratio = 1;
 
     private double width, height;
@@ -38,7 +38,8 @@ public class Grid extends BorderPane {
             if (e.getSource() instanceof Pane) {
                 Pane canvas = (Pane)e.getSource();
                 double x = originX + e.getX()/ratio;
-                double y = originY + e.getY()/ratio;
+                double y = originY - e.getY()/ratio;
+                System.out.println(x + " " + y);
                 Point newPoint = new Point(x, y, e.getX(), e.getY());
                 canvas.getChildren().add(newPoint);
                 convexHull.add(newPoint);
@@ -65,8 +66,8 @@ public class Grid extends BorderPane {
         });
 
         canvas.setOnMouseMoved(e -> {
-            double x = (originX + e.getX()/ratio) - this.width / (2 * ratio);
-            double y = this.height/ (2 * ratio) - (originY + e.getY()/ratio);
+            double x = originX + e.getX()/ratio;
+            double y = originY - e.getY()/ratio;
             toolTip.setText("{x: " + x + ", y: " + y + "}");
             toolTip.show((Node) e.getSource(), e.getScreenX() + 15, e.getScreenY() + 15);
         });
@@ -82,7 +83,7 @@ public class Grid extends BorderPane {
             double offsetX = e.getX() - dragOriginX;
             double offsetY = e.getY() - dragOriginY;
             originX -= offsetX/ratio;
-            originY -= offsetY/ratio;
+            originY += offsetY/ratio;
             for (var child : canvas.getChildren()) {
                 if (child instanceof Point) {
                     Point p = (Point)child;
@@ -117,7 +118,7 @@ public class Grid extends BorderPane {
                 }
             }
             centerX = originX + centerX/ratio;
-            centerY = originY + centerY/ratio;
+            centerY = originY - centerY/ratio;
             ratio *= speed;
             originX = centerX + (originX - centerX)/speed;
             originY = centerY + (originY - centerY)/speed;

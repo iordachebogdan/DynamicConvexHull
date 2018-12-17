@@ -3,6 +3,7 @@ package main.java;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import static main.java.Constants.WINDOW_WIDTH;
@@ -17,8 +18,10 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
         primaryStage.setResizable(false);
 
-        Grid grid = new Grid();
-        root.getChildren().add(grid);
+        Pane main = new Pane();
+        root.getChildren().add(main);
+        main.setStyle("-fx-background-color : #455158;");
+        main.getChildren().add(new Grid(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         primaryStage.show();
     }

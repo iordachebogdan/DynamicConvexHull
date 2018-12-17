@@ -1,9 +1,8 @@
 package main.java;
 
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
+import javafx.scene.effect.DropShadow;
 
 import static main.java.Constants.POINT_RADIUS;
 import static main.java.Constants.ACTIVE_POINT_COLOR;
@@ -13,18 +12,29 @@ import static main.java.Constants.EPS;
 public class Point extends Circle implements Comparable<Point> {
     public final double x, y;
     private boolean setInactiveCounter;
-    private Line lineToPrev = null;
+    private static final DropShadow ACTIVE_SHADOW, INACTIVE_SHADOW;
+
+    static {
+        ACTIVE_SHADOW = new DropShadow();
+        ACTIVE_SHADOW.setColor(ACTIVE_POINT_COLOR);
+
+        INACTIVE_SHADOW = new DropShadow();
+        INACTIVE_SHADOW.setColor(INACTIVE_POINT_COLOR);
+    }
 
     public Point(double x, double y, double screenX, double screenY) {
         super(screenX, screenY, POINT_RADIUS);
-        super.setFill(ACTIVE_POINT_COLOR);
         super.setOnMouseClicked(e -> {
             if (e.getSource() instanceof Point) {
                 e.consume();
             }
         });
+
         this.x = x;
         this.y = y;
+
+        super.setEffect(ACTIVE_SHADOW);
+        super.setFill(ACTIVE_POINT_COLOR);
         resetSetInactiveCounter();
     }
 
@@ -35,6 +45,7 @@ public class Point extends Circle implements Comparable<Point> {
     public void setInactive() {
         if (!this.setInactiveCounter) {
             super.setFill(INACTIVE_POINT_COLOR);
+            super.setEffect(INACTIVE_SHADOW);
         } else {
             setInactiveCounter = false;
         }

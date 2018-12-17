@@ -19,13 +19,18 @@ public class Grid extends BorderPane {
     private double originX = 0, originY = 0;
     private double ratio = 1;
 
-    public Grid() {
+    private double width, height;
+
+    public Grid(double width, double height) {
         canvas = new Pane();
-        convexHull = new ConvexHullManager();
-        canvas.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        this.width = width;
+        this.height = height;
+        canvas.setPrefSize(this.width, this.height);
         this.setCenter(canvas);
 
         toolTip = new Tooltip();
+        convexHull = new ConvexHullManager();
 
         canvas.setOnMouseClicked(e -> {
             if (!e.isStillSincePress())
@@ -46,7 +51,7 @@ public class Grid extends BorderPane {
                     line.setStartY(hull.get(i).getCenterY());
                     line.setEndX(hull.get(i+1).getCenterX());
                     line.setEndY(hull.get(i+1).getCenterY());
-                    line.setFill(Color.BLUE);
+                    line.setStroke(EDGE_COLOR);
                     line.setStrokeWidth(hull.get(i).getRadius() / 2.0);
                     line.setOnMouseClicked(t -> {
                         if (t.getSource() instanceof Line) {
@@ -54,13 +59,14 @@ public class Grid extends BorderPane {
                         }
                     });
                     canvas.getChildren().add(line);
+                    line.toBack();  // fix edges drawing over points
                 }
             }
         });
 
         canvas.setOnMouseMoved(e -> {
-            double x = originX + e.getX()/ratio;
-            double y = originY + e.getY()/ratio;
+            double x = (originX + e.getX()/ratio) - this.width / (2 * ratio);
+            double y = this.height/ (2 * ratio) - (originY + e.getY()/ratio);
             toolTip.setText("{x: " + x + ", y: " + y + "}");
             toolTip.show((Node) e.getSource(), e.getScreenX() + 15, e.getScreenY() + 15);
         });

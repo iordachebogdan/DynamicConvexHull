@@ -48,6 +48,11 @@ public class Grid extends BorderPane {
                     line.setEndY(hull.get(i+1).getCenterY());
                     line.setFill(Color.BLUE);
                     line.setStrokeWidth(hull.get(i).getRadius() / 2.0);
+                    line.setOnMouseClicked(t -> {
+                        if (t.getSource() instanceof Line) {
+                            t.consume();
+                        }
+                    });
                     canvas.getChildren().add(line);
                 }
             }

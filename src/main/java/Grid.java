@@ -39,7 +39,6 @@ public class Grid extends BorderPane {
                 Pane canvas = (Pane)e.getSource();
                 double x = originX + e.getX()/ratio;
                 double y = originY - e.getY()/ratio;
-                System.out.println(x + " " + y);
                 Point newPoint = new Point(x, y, e.getX(), e.getY());
                 canvas.getChildren().add(newPoint);
                 convexHull.add(newPoint);

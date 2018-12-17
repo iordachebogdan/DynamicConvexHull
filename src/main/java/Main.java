@@ -3,11 +3,20 @@ package main.java;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+
+import javafx.scene.control.Button;
+import javafx.geometry.Insets;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 
 import static main.java.Constants.WINDOW_WIDTH;
 import static main.java.Constants.WINDOW_HEIGHT;
+import static main.java.Constants.INSERT_WINDOW_WIDTH;
+import static main.java.Constants.INSERT_WINDOW_HEIGHT;
+import static main.java.Constants.FORM_STYLE;
 
 public class Main extends Application {
 
@@ -15,13 +24,61 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Group root = new Group();
         primaryStage.setTitle("Dynamic Convex Hull");
-        primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
+
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        primaryStage.setScene(scene);
         primaryStage.setResizable(false);
 
-        Pane main = new Pane();
+        Grid main = new Grid(WINDOW_WIDTH, WINDOW_HEIGHT);
+        main.setStyle(FORM_STYLE);
         root.getChildren().add(main);
-        main.setStyle("-fx-background-color : #455158;");
-        main.getChildren().add(new Grid(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+        primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() != KeyCode.F1) {
+                return;
+            }
+
+            Stage insertStage = new Stage();
+            insertStage.setAlwaysOnTop(true);
+            insertStage.setResizable(false);
+
+            Group insertRoot = new Group();
+            //insertStage.setTitle("Insert point");
+            insertStage.setScene(new Scene(insertRoot, INSERT_WINDOW_WIDTH, INSERT_WINDOW_HEIGHT));
+            insertStage.show();
+
+            GridPane grid = new GridPane();
+            grid.setPadding(new Insets(10, 10, 10, 10));
+            grid.setVgap(5);
+            grid.setHgap(5);
+
+            final TextField[] field = new TextField[2];
+            final Button submit = new Button("Submit");
+            submit.setPrefSize(115, 20);
+            submit.setDisable(true);
+            GridPane.setConstraints(submit, 0, 2);
+            grid.getChildren().add(submit);
+            submit.setOnMouseClicked(submitClickedEvent -> {  // TODO(@iordachebogdan) add point to main grid
+                double x = Double.parseDouble(field[0].getText());
+                double y = Double.parseDouble(field[1].getText());
+            });
+            for (int i = 0; i < 2; ++i) {
+                field[i] = new TextField();
+                field[i].setPrefColumnCount(9);
+                field[i].textProperty().addListener((observable, oldValue, value) -> {  // awful, just awful :|
+                    try {
+                        Double.parseDouble(field[0].getText());
+                        Double.parseDouble(field[1].getText());
+                        submit.setDisable(false);
+                    } catch (NumberFormatException numberException) {
+                        submit.setDisable(true);
+                    }
+                });
+                GridPane.setConstraints(field[i], 0, i);
+                grid.getChildren().add(field[i]);
+            }
+            insertRoot.getChildren().add(grid);
+        });
 
         primaryStage.show();
     }

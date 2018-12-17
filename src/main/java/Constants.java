@@ -11,6 +11,8 @@ public final class Constants {
     public static final int WINDOW_WIDTH = 1024;
     public static final int WINDOW_HEIGHT = 768;
 
+    public static final double SCROLL_SPEED = 1.05;
+
     private Constants() {
     }
 }

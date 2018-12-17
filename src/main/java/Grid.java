@@ -9,8 +9,7 @@ import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
-import static main.java.Constants.WINDOW_WIDTH;
-import static main.java.Constants.WINDOW_HEIGHT;
+import static main.java.Constants.*;
 
 public class Grid extends BorderPane {
     private Pane canvas;
@@ -18,6 +17,7 @@ public class Grid extends BorderPane {
     private Tooltip toolTip;
     private double dragOriginX, dragOriginY;
     private double originX = 0, originY = 0;
+    private double ratio = 1;
 
     public Grid() {
         canvas = new Pane();
@@ -32,9 +32,8 @@ public class Grid extends BorderPane {
                 return;
             if (e.getSource() instanceof Pane) {
                 Pane canvas = (Pane)e.getSource();
-                double x = originX + e.getX();
-                double y = originY + e.getY();
-                System.out.println(x + " " + y);
+                double x = originX + e.getX()/ratio;
+                double y = originY + e.getY()/ratio;
                 Point newPoint = new Point(x, y, e.getX(), e.getY());
                 canvas.getChildren().add(newPoint);
                 convexHull.add(newPoint);
@@ -54,9 +53,9 @@ public class Grid extends BorderPane {
             }
         });
 
-        canvas.setOnMouseMoved(e -> {  // @TODO(iordachebogdan) account for drag and zoom displacements (also ordinates seem to be inverted)
-            double x = originX + e.getX();
-            double y = originY + e.getY();
+        canvas.setOnMouseMoved(e -> {
+            double x = originX + e.getX()/ratio;
+            double y = originY + e.getY()/ratio;
             toolTip.setText("{x: " + x + ", y: " + y + "}");
             toolTip.show((Node) e.getSource(), e.getScreenX() + 15, e.getScreenY() + 15);
         });
@@ -71,21 +70,46 @@ public class Grid extends BorderPane {
         canvas.setOnMouseDragged(e -> {
             double offsetX = e.getX() - dragOriginX;
             double offsetY = e.getY() - dragOriginY;
-            originX -= offsetX;
-            originY -= offsetY;
+            originX -= offsetX/ratio;
+            originY -= offsetY/ratio;
             for (var child : canvas.getChildren()) {
                 if (child instanceof Point) {
-                    ((Point)child).setCenterX(((Point)child).getCenterX() + offsetX);
-                    ((Point)child).setCenterY(((Point)child).getCenterY() + offsetY);
+                    Point p = (Point)child;
+                    p.setCenterX(p.getCenterX() + offsetX);
+                    p.setCenterY(p.getCenterY() + offsetY);
                 } else if (child instanceof Line) {
-                    ((Line)child).setStartX(((Line)child).getStartX() + offsetX);
-                    ((Line)child).setStartY(((Line)child).getStartY() + offsetY);
-                    ((Line)child).setEndX(((Line)child).getEndX() + offsetX);
-                    ((Line)child).setEndY(((Line)child).getEndY() + offsetY);
+                    Line l = (Line)child;
+                    l.setStartX(l.getStartX() + offsetX);
+                    l.setStartY(l.getStartY() + offsetY);
+                    l.setEndX(l.getEndX() + offsetX);
+                    l.setEndY(l.getEndY() + offsetY);
                 }
             }
             dragOriginX = e.getX();
             dragOriginY = e.getY();
+        });
+
+        canvas.setOnScroll(e -> {
+            double centerX = WINDOW_WIDTH/2.0;
+            double centerY = WINDOW_HEIGHT/2.0;
+            double speed = (e.getDeltaY() > 0 ? SCROLL_SPEED : 2-SCROLL_SPEED);
+            for (var child : canvas.getChildren()) {
+                if (child instanceof Point) {
+                    Point p = (Point)child;
+                    p.setCenterX(centerX + speed * (p.getCenterX() - centerX));
+                    p.setCenterY(centerY + speed * (p.getCenterY() - centerY));
+                } else if (child instanceof Line) {Line l = (Line)child;
+                    l.setStartX(centerX + speed * (l.getStartX() - centerX));
+                    l.setStartY(centerY + speed * (l.getStartY() - centerY));
+                    l.setEndX(centerX + speed * (l.getEndX() - centerX));
+                    l.setEndY(centerY + speed * (l.getEndY() - centerY));
+                }
+            }
+            centerX = originX + centerX/ratio;
+            centerY = originY + centerY/ratio;
+            ratio *= speed;
+            originX = centerX + (originX - centerX)/speed;
+            originY = centerY + (originY - centerY)/speed;
         });
     }
 }

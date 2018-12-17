@@ -58,9 +58,10 @@ public class Main extends Application {
             submit.setDisable(true);
             GridPane.setConstraints(submit, 0, 2);
             grid.getChildren().add(submit);
-            submit.setOnMouseClicked(submitClickedEvent -> {  // TODO(@iordachebogdan) add point to main grid
+            submit.setOnMouseClicked(submitClickedEvent -> {
                 double x = Double.parseDouble(field[0].getText());
                 double y = Double.parseDouble(field[1].getText());
+                main.addPoint(x, y);
             });
             for (int i = 0; i < 2; ++i) {
                 field[i] = new TextField();

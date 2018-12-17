@@ -39,28 +39,7 @@ public class Grid extends BorderPane {
                 Pane canvas = (Pane)e.getSource();
                 double x = originX + e.getX()/ratio;
                 double y = originY - e.getY()/ratio;
-                Point newPoint = new Point(x, y, e.getX(), e.getY());
-                canvas.getChildren().add(newPoint);
-                convexHull.add(newPoint);
-
-                canvas.getChildren().removeIf(c -> c instanceof Line);
-                var hull = convexHull.getConvexHull();
-                for (int i = 0; i + 1 < hull.size(); ++i) {
-                    Line line = new Line();
-                    line.setStartX(hull.get(i).getCenterX());
-                    line.setStartY(hull.get(i).getCenterY());
-                    line.setEndX(hull.get(i+1).getCenterX());
-                    line.setEndY(hull.get(i+1).getCenterY());
-                    line.setStroke(EDGE_COLOR);
-                    line.setStrokeWidth(hull.get(i).getRadius() / 2.0);
-                    line.setOnMouseClicked(t -> {
-                        if (t.getSource() instanceof Line) {
-                            t.consume();
-                        }
-                    });
-                    canvas.getChildren().add(line);
-                    line.toBack();  // fix edges drawing over points
-                }
+                addPoint(x, y);
             }
         });
 
@@ -122,5 +101,32 @@ public class Grid extends BorderPane {
             originX = centerX + (originX - centerX)/speed;
             originY = centerY + (originY - centerY)/speed;
         });
+    }
+
+    public void addPoint(double x, double y) {
+        double canvasX = (x - originX) * ratio;
+        double canvasY = (originY - y) * ratio;
+        Point newPoint = new Point(x, y, canvasX, canvasY);
+        canvas.getChildren().add(newPoint);
+        convexHull.add(newPoint);
+
+        canvas.getChildren().removeIf(c -> c instanceof Line);
+        var hull = convexHull.getConvexHull();
+        for (int i = 0; i + 1 < hull.size(); ++i) {
+            Line line = new Line();
+            line.setStartX(hull.get(i).getCenterX());
+            line.setStartY(hull.get(i).getCenterY());
+            line.setEndX(hull.get(i+1).getCenterX());
+            line.setEndY(hull.get(i+1).getCenterY());
+            line.setStroke(EDGE_COLOR);
+            line.setStrokeWidth(hull.get(i).getRadius() / 2.0);
+            line.setOnMouseClicked(t -> {
+                if (t.getSource() instanceof Line) {
+                    t.consume();
+                }
+            });
+            canvas.getChildren().add(line);
+            line.toBack();  // fix edges drawing over points
+        }
     }
 }

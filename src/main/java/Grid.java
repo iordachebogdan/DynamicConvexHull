@@ -95,8 +95,8 @@ public class Grid extends BorderPane {
         });
 
         canvas.setOnScroll(e -> {
-            double centerX = WINDOW_WIDTH/2.0;
-            double centerY = WINDOW_HEIGHT/2.0;
+            double centerX = e.getX();
+            double centerY = e.getY();
             double speed = (e.getDeltaY() > 0 ? SCROLL_SPEED : 2-SCROLL_SPEED);
             for (var child : canvas.getChildren()) {
                 if (child instanceof Point) {

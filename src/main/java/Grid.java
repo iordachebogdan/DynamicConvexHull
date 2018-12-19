@@ -112,6 +112,12 @@ public class Grid extends BorderPane {
 
         canvas.getChildren().removeIf(c -> c instanceof Line);
         var hull = convexHull.getConvexHull();
+        System.out.println("New point added at " + newPoint.toString());
+        System.out.println("Convex hull:");
+        for (int i = 0; i + 1 < hull.size(); ++i) {
+            System.out.print(hull.get(i).toString() + " ");
+        }
+        System.out.println();
         for (int i = 0; i + 1 < hull.size(); ++i) {
             Line line = new Line();
             line.setStartX(hull.get(i).getCenterX());
